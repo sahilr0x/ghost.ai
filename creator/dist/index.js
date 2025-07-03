@@ -15,7 +15,7 @@ function openMeet(driver) {
     return __awaiter(this, void 0, void 0, function* () {
         const name = "Meeting bot";
         try {
-            yield driver.get("https://meet.google.com/ghw-oneu-zsu");
+            yield driver.get("https://meet.google.com/skz-pfhe-gth");
             try {
                 const popupButton = yield driver.wait(selenium_webdriver_1.until.elementLocated(selenium_webdriver_1.By.xpath('//span[contains(text(),"Got it")]')), 5000);
                 yield popupButton.click();
@@ -50,6 +50,7 @@ function getDriver() {
         options.addArguments("--auto-select-desktop-capture-source=[RECORD]");
         options.addArguments("--enable-usermedia-screen-capturing");
         options.addArguments('--auto-select-tab-capture-source-by-title="Meet"');
+        options.addArguments("--allow-running-insecure-content");
         let driver = yield new selenium_webdriver_1.Builder()
             .forBrowser(selenium_webdriver_1.Browser.CHROME)
             .setChromeOptions(options)
@@ -94,19 +95,62 @@ function startScreenshare(driver) {
           },
           audio: true,
           preferCurrentTab: true
-      }).then(async stream => {
-          // stream should be streamed via WebRTC to a server
-          console.log("before start recording")
-          const recordedChunks = await startRecording(stream, 20000);
-          console.log("after start recording")
-          let recordedBlob = new Blob(recordedChunks, { type: "video/webm" });
-          const recording = document.createElement("video");
-          recording.src = URL.createObjectURL(recordedBlob);
-          const downloadButton = document.createElement("a");
-          downloadButton.href = recording.src;
-          downloadButton.download = "RecordedVideo.webm";    
-          downloadButton.click();
-          console.log("after download button click")
+      }).then(async screenStream => {                        
+          const audioContext = new AudioContext();
+          const screenAudioStream = audioContext.createMediaStreamSource(screenStream)
+          const audioEl1 = document.querySelectorAll("audio")[0];
+          const audioEl2 = document.querySelectorAll("audio")[1];
+          const audioEl3 = document.querySelectorAll("audio")[2];
+          const audioElStream1 = audioContext.createMediaStreamSource(audioEl1.srcObject)
+          const audioElStream2 = audioContext.createMediaStreamSource(audioEl3.srcObject)
+          const audioElStream3 = audioContext.createMediaStreamSource(audioEl2.srcObject)
+
+          const dest = audioContext.createMediaStreamDestination();
+
+          screenAudioStream.connect(dest)
+          audioElStream1.connect(dest)
+          audioElStream2.connect(dest)
+          audioElStream3.connect(dest)
+
+          // window.setInterval(() => {
+          //   document.querySelectorAll("audio").forEach(audioEl => {
+          //     if (!audioEl.getAttribute("added")) {
+          //       console.log("adding new audio");
+          //       const audioEl = document.querySelector("audio");
+          //       const audioElStream = audioContext.createMediaStreamSource(audioEl.srcObject)
+          //       audioEl.setAttribute("added", true);
+          //       audioElStream.connect(dest)
+          //     }
+          //   })
+
+          // }, 2500);
+        
+        // Combine screen and audio streams
+        const combinedStream = new MediaStream([
+            ...screenStream.getVideoTracks(),
+            ...dest.stream.getAudioTracks()
+        ]);
+        
+        console.log("before start recording")
+        const recordedChunks = await startRecording(combinedStream, 60000);
+        console.log("after start recording")
+        
+        let recordedBlob = new Blob(recordedChunks, { type: "video/webm" });
+        
+        // Create download for video with audio
+        const recording = document.createElement("video");
+        recording.src = URL.createObjectURL(recordedBlob);
+        
+        const downloadButton = document.createElement("a");
+        downloadButton.href = recording.src;
+        downloadButton.download = "RecordedScreenWithAudio.webm";    
+        downloadButton.click();
+        
+        console.log("after download button click")
+        
+        // Clean up streams
+        screenStream.getTracks().forEach(track => track.stop());
+        audioStream.getTracks().forEach(track => track.stop());
       })
       
   `);
