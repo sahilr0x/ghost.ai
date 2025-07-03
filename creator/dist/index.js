@@ -10,43 +10,115 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const chrome_1 = require("selenium-webdriver/chrome");
-const { Builder, Browser, By, until } = require("selenium-webdriver");
-function main() {
+const selenium_webdriver_1 = require("selenium-webdriver");
+function openMeet(driver) {
     return __awaiter(this, void 0, void 0, function* () {
-        const options = new chrome_1.Options();
-        options.addArguments("--disable-notifications");
-        options.addArguments("--disable-extensions");
-        options.addArguments("--disable-blink-features=AutomationControlled");
-        options.addArguments("--use-fake-ui-for-media-stream");
-        const driver = yield new Builder()
-            .forBrowser(Browser.CHROME)
-            .setChromeOptions(options)
-            .build();
         const name = "Meeting bot";
         try {
             yield driver.get("https://meet.google.com/ghw-oneu-zsu");
-            // Wait and click "Got it" button if it appears
             try {
-                const popupButton = yield driver.wait(until.elementLocated(By.xpath('//span[contains(text(),"Got it")]')), 5000);
+                const popupButton = yield driver.wait(selenium_webdriver_1.until.elementLocated(selenium_webdriver_1.By.xpath('//span[contains(text(),"Got it")]')), 5000);
                 yield popupButton.click();
             }
             catch (e) {
                 console.log("No 'Got it' popup");
             }
-            // Wait for the name input
-            const nameInput = yield driver.wait(until.elementLocated(By.xpath('//input[@aria-label="Your name"]')), 10000);
+            const nameInput = yield driver.wait(selenium_webdriver_1.until.elementLocated(selenium_webdriver_1.By.xpath('//input[@aria-label="Your name"]')), 10000);
             yield nameInput.clear();
             yield nameInput.sendKeys(name);
-            const joinButton = yield driver.wait(until.elementLocated(By.xpath('//span[contains(text(),"Ask to join")]')), 10000);
+            const joinButton = yield driver.wait(selenium_webdriver_1.until.elementLocated(selenium_webdriver_1.By.xpath('//span[contains(text(),"Ask to join")]')), 10000);
             yield joinButton.click();
-            yield driver.sleep(10000);
         }
         catch (e) {
-            console.error("❌ Error:", e);
+            console.error(" Error:", e);
         }
         finally {
-            yield driver.quit();
+            // await driver.quit();
         }
+    });
+}
+function getDriver() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const options = new chrome_1.Options();
+        // options.setChromeBinaryPath(
+        //   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+        // );
+        options.addArguments("--disable-blink-features=AutomationControlled");
+        options.addArguments("--use-fake-ui-for-media-stream");
+        options.addArguments("--window-size=1080,720");
+        options.addArguments("--auto-select-desktop-capture-source=[RECORD]");
+        options.addArguments("--auto-select-desktop-capture-source=[RECORD]");
+        options.addArguments("--enable-usermedia-screen-capturing");
+        options.addArguments('--auto-select-tab-capture-source-by-title="Meet"');
+        let driver = yield new selenium_webdriver_1.Builder()
+            .forBrowser(selenium_webdriver_1.Browser.CHROME)
+            .setChromeOptions(options)
+            .build();
+        return driver;
+    });
+}
+function startScreenshare(driver) {
+    return __awaiter(this, void 0, void 0, function* () {
+        console.log("startScreensharecalled");
+        const response = yield driver.executeScript(`
+
+      function wait(delayInMS) {
+          return new Promise((resolve) => setTimeout(resolve, delayInMS));
+      }
+
+      function startRecording(stream, lengthInMS) {
+          let recorder = new MediaRecorder(stream);
+          let data = [];
+          
+          recorder.ondataavailable = (event) => data.push(event.data);
+          recorder.start();
+          
+          let stopped = new Promise((resolve, reject) => {
+              recorder.onstop = resolve;
+              recorder.onerror = (event) => reject(event.name);
+          });
+          
+          let recorded = wait(lengthInMS).then(() => {
+              if (recorder.state === "recording") {
+              recorder.stop();
+              }
+          });
+          
+          return Promise.all([stopped, recorded]).then(() => data);
+      }
+    
+      console.log("before mediadevices")
+      window.navigator.mediaDevices.getDisplayMedia({
+          video: {
+            displaySurface: "browser"
+          },
+          audio: true,
+          preferCurrentTab: true
+      }).then(async stream => {
+          // stream should be streamed via WebRTC to a server
+          console.log("before start recording")
+          const recordedChunks = await startRecording(stream, 20000);
+          console.log("after start recording")
+          let recordedBlob = new Blob(recordedChunks, { type: "video/webm" });
+          const recording = document.createElement("video");
+          recording.src = URL.createObjectURL(recordedBlob);
+          const downloadButton = document.createElement("a");
+          downloadButton.href = recording.src;
+          downloadButton.download = "RecordedVideo.webm";    
+          downloadButton.click();
+          console.log("after download button click")
+      })
+      
+  `);
+        console.log(response);
+        driver.sleep(1000000);
+    });
+}
+function main() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const driver = yield getDriver();
+        yield openMeet(driver);
+        yield startScreenshare(driver);
     });
 }
 main();
