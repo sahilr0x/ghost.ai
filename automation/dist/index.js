@@ -28,6 +28,10 @@ function openMeet(driver) {
             const nameInput = yield driver.wait(selenium_webdriver_1.until.elementLocated(selenium_webdriver_1.By.xpath('//input[@aria-label="Your name"]')), 10000);
             yield nameInput.clear();
             yield nameInput.sendKeys(name);
+            const micMute = yield driver.wait(selenium_webdriver_1.until.elementLocated(selenium_webdriver_1.By.xpath("//div[@role='button' and @aria-label='Turn off microphone']")));
+            yield micMute.click();
+            const webOff = yield driver.wait(selenium_webdriver_1.until.elementLocated(selenium_webdriver_1.By.xpath("//div[@role='button' and @aria-label='Turn off camera']")));
+            yield webOff.click();
             const joinButton = yield driver.wait(selenium_webdriver_1.until.elementLocated(selenium_webdriver_1.By.xpath('//span[contains(text(),"Ask to join")]')), 10000);
             yield joinButton.click();
         }

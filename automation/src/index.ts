@@ -28,6 +28,21 @@ async function openMeet(driver: WebDriver) {
     await nameInput.clear();
     await nameInput.sendKeys(name);
 
+    const micMute = await driver.wait(
+      until.elementLocated(
+        By.xpath("//div[@role='button' and @aria-label='Turn off microphone']")
+      )
+    );
+    await micMute.click();
+
+    const webOff = await driver.wait(
+      until.elementLocated(
+        By.xpath("//div[@role='button' and @aria-label='Turn off camera']")
+      )
+    );
+
+    await webOff.click();
+
     const joinButton = await driver.wait(
       until.elementLocated(By.xpath('//span[contains(text(),"Ask to join")]')),
       10000
