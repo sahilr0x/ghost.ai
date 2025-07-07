@@ -3,13 +3,12 @@ import { Options } from "selenium-webdriver/chrome";
 import { Builder, Browser, By, until } from "selenium-webdriver";
 import { CHROME_CONSTANTS } from "./constants";
 import { InitializeWebSocketServer } from "./ws/ws";
-import { error } from "console";
 
 async function openMeet(driver: WebDriver) {
   const name = "Meeting bot";
 
   try {
-    await driver.get("https://meet.google.com/com-ojkf-srg");
+    await driver.get("https://meet.google.com/evc-ptmn-jrc");
 
     try {
       const popupButton = await driver.wait(
@@ -63,20 +62,20 @@ async function openMeet(driver: WebDriver) {
     );
     await meetKeepUSafeBUtton.click();
 
-    try {
-      const counterPopup = await driver.wait(
-        until.elementLocated(
-          By.xpath('//*[@id="yDmH0d"]/div[3]/div[2]/div/div[2]/button')
-        ),
-        30000
-      );
+    // try {
+    //   const counterPopup = await driver.wait(
+    //     until.elementLocated(
+    //       By.xpath('//*[@id="yDmH0d"]/div[3]/div[2]/div/div[2]/button')
+    //     ),
+    //     30000
+    //   );
 
-      if (counterPopup) {
-        await counterPopup.click();
-      }
-    } catch (err) {
-      console.error("counterpop not found", err);
-    }
+    //   if (counterPopup) {
+    //     await counterPopup.click();
+    //   }
+    // } catch (err) {
+    //   console.error("counterpop not found", err);
+    // }
 
     // VfPpkd - RLmnJb;
   } catch (e) {

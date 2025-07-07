@@ -17,7 +17,7 @@ function openMeet(driver) {
     return __awaiter(this, void 0, void 0, function* () {
         const name = "Meeting bot";
         try {
-            yield driver.get("https://meet.google.com/com-ojkf-srg");
+            yield driver.get("https://meet.google.com/evc-ptmn-jrc");
             try {
                 const popupButton = yield driver.wait(selenium_webdriver_1.until.elementLocated(selenium_webdriver_1.By.xpath('//span[contains(text(),"Got it")]')), 5000);
                 yield popupButton.click();
@@ -38,15 +38,19 @@ function openMeet(driver) {
             yield joinButton.click();
             const meetKeepUSafeBUtton = yield driver.wait(selenium_webdriver_1.until.elementLocated(selenium_webdriver_1.By.xpath('//*[@id="yDmH0d"]/div[3]/span/div[2]/div/div/div[3]/div[2]/button/span[6]')));
             yield meetKeepUSafeBUtton.click();
-            try {
-                const counterPopup = yield driver.wait(selenium_webdriver_1.until.elementLocated(selenium_webdriver_1.By.xpath('//*[@id="yDmH0d"]/div[3]/div[2]/div/div[2]/button')), 30000);
-                if (counterPopup) {
-                    yield counterPopup.click();
-                }
-            }
-            catch (err) {
-                console.error("counterpop not found", err);
-            }
+            // try {
+            //   const counterPopup = await driver.wait(
+            //     until.elementLocated(
+            //       By.xpath('//*[@id="yDmH0d"]/div[3]/div[2]/div/div[2]/button')
+            //     ),
+            //     30000
+            //   );
+            //   if (counterPopup) {
+            //     await counterPopup.click();
+            //   }
+            // } catch (err) {
+            //   console.error("counterpop not found", err);
+            // }
             // VfPpkd - RLmnJb;
         }
         catch (e) {
