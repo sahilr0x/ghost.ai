@@ -12,7 +12,7 @@ require("dotenv").config();
 
 const BUCKET_NAME = process.env.BUCKET_NAME;
 const KEY = process.env.KEY;
-const OUTPUT_BUCKET = process.env.OUTPUT_BUCKET || "";
+const OUTPUT_BUCKET = process.env.OUTPUT_BUCKET || "production.ghost-ai";
 
 const s3Client = new S3Client({
   region: "ap-south-1",

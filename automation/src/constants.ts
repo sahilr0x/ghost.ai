@@ -15,7 +15,7 @@ export const CHROME_CONSTANTS = {
       displaySurface: "browser",
     },
     systemAudio: "include",
-    audio: true,
+    audio: false,
     preferCurrentTab: true,
   },
 };
