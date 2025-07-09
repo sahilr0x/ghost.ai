@@ -21,8 +21,8 @@ const KEY = process.env.KEY;
 const s3Client = new S3Client({
   region: "ap-south-1",
   credentials: {
-    accessKeyId: "REDACTED_KEY",
-    secretAccessKey: "REDACTED_SECRET",
+    accessKeyId: "",
+    secretAccessKey: "",
   },
 });
 
@@ -32,13 +32,13 @@ async function init() {
     Bucket: BUCKE_NAME,
     Key: KEY,
   });
+
   const result = await s3Client.send(command);
   const originalFilePath = `original-video.webm`;
   await fs.writeFile(originalFilePath, result.Body);
   const originalVideoPath = path.resolve(originalFilePath);
 
   //start the transcoder
-
   const promises = RESOLUTIONS.map((resolution) => {
     const output = `video-${resolution.name}.mp4`;
 
@@ -48,6 +48,9 @@ async function init() {
         .videoCodec("libx264")
         .audioCodec("aac")
         .withSize(`${resolution.width}x${resolution.height}`)
+        .on("start", () =>
+          console.log("Start", ` ${resolution.width}x${resolution.height}`)
+        )
         .on("end", async () => {
           //upload the video
           const putCommand = new PutObjectCommand({
