@@ -48,7 +48,7 @@ async function init() {
 
     for (const message of Messages) {
       const { MessageId, Body, ReceiptHandle } = message;
-      console.log(`📩 Message Received`, { MessageId });
+      console.log(` Message Received`, { MessageId });
 
       if (!Body || !ReceiptHandle) continue;
 
@@ -69,7 +69,7 @@ async function init() {
           const inputKey = decodeURIComponent(object.key.replace(/\+/g, " ")); // handle URL encoding
 
           // Step 1: Trigger video-transcoder task
-          console.log("🎬 Triggering video-transcoder task...");
+          console.log(" Triggering video-transcoder task...");
           await ecsClient.send(
             new RunTaskCommand({
               taskDefinition:
@@ -100,9 +100,9 @@ async function init() {
               },
             })
           );
-          console.log("✅ Video-transcoder ECS task started.");
+          console.log(" Video-transcoder ECS task started.");
 
-          // ✅Directly trigger audio-summary using original webm from ghostai-automation-1
+          // Directly trigger audio-summary using original webm from ghostai-automation-1
           console.log("🎧 Triggering audio-summary task...");
           await ecsClient.send(
             new RunTaskCommand({
@@ -140,9 +140,9 @@ async function init() {
         await sqsClient.send(
           new DeleteMessageCommand({ QueueUrl: QUEUE_URL, ReceiptHandle })
         );
-        console.log("🗑️ Deleted message from queue.");
+        console.log(" Deleted message from queue.");
       } catch (err) {
-        console.error("❌ Error processing message:", err);
+        console.error(" Error processing message:", err);
       }
     }
   }

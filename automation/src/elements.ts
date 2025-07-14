@@ -3,7 +3,7 @@ import { By, until, WebDriver, WebElement } from "selenium-webdriver";
 export async function findAndOptionallyClickElement(
   driver: WebDriver,
   xpath: string,
-  timeout = 10000,
+  timeout = 5000,
   click = true
 ): Promise<boolean> {
   try {

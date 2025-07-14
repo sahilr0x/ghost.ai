@@ -1,6 +1,6 @@
 import { WebDriver } from "selenium-webdriver";
 import { Options } from "selenium-webdriver/chrome";
-import { Builder, Browser, By, until } from "selenium-webdriver";
+import { Builder, Browser } from "selenium-webdriver";
 import { CHROME_CONSTANTS } from "./constants";
 import { InitializeWebSocketServer } from "./ws/ws";
 import { findAndOptionallyClickElement, yourName } from "./elements";
@@ -9,7 +9,7 @@ async function openMeet(driver: WebDriver) {
   const name = "Meeting bot";
 
   try {
-    await driver.get("https://meet.google.com/evc-ptmn-jrc");
+    await driver.get("https://meet.google.com/jnv-goof-hmz");
 
     //GOT IT POPUP
     await findAndOptionallyClickElement(
@@ -49,6 +49,10 @@ async function openMeet(driver: WebDriver) {
       driver,
       '//*[@id="yDmH0d"]/div[3]/div[2]/div/div[2]/button'
     );
+
+    // PARTICIPANTS_COUNTER_XPATH;
+
+    //LEAVE BUTTON XPATH
   } catch (e) {
     console.error(" Error:", e);
   } finally {
@@ -147,7 +151,7 @@ async function startScreenshare(driver: WebDriver) {
     `);
 
   console.log(response);
-  await 1000000;
+  // await 1000000;
 }
 
 async function main() {
